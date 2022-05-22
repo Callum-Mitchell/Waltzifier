@@ -24,82 +24,82 @@ MS_PER_SECOND       = float(1000.0)
 #Take 2 beats worth of straight-beat input samples and waltzify the rhythm
 #inSamples should be of length 2*beatSampleLength, except at the end of a file/channel
 def waltzifyStraightBeatPair(inSamples, beatSampleLength, sr):
-    lastSmpl            = len(inSamples) - 1
-    halfBeatSmpl        = min(round(beatSampleLength*HALFF       ), lastSmpl)
-    threeHalvesBeatSmpl = min(round(beatSampleLength*THREE_HALVES), lastSmpl)
+    numSamples          = len(inSamples)
+    halfBeatSmpl        = min(round(beatSampleLength*HALFF       ), numSamples)
+    threeHalvesBeatSmpl = min(round(beatSampleLength*THREE_HALVES), numSamples)
 
     outSamples = np.empty((0, 2), float)
-    if(0 < lastSmpl):
-        outSamples = np.append(outSamples, pyrb.pyrb.time_stretch(inSamples[0                  :halfBeatSmpl       ], sr, THREE_QUARTERS), axis=0)
-    if(halfBeatSmpl < lastSmpl):
-        outSamples = np.append(outSamples, pyrb.pyrb.time_stretch(inSamples[halfBeatSmpl       :threeHalvesBeatSmpl], sr, THREE_HALVES  ), axis=0)
-    if(threeHalvesBeatSmpl < lastSmpl):
-        outSamples = np.append(outSamples, pyrb.pyrb.time_stretch(inSamples[threeHalvesBeatSmpl:lastSmpl           ], sr, THREE_QUARTERS), axis=0)
+    if(0 < numSamples):
+        outSamples = np.append(outSamples, pyrb.pyrb.time_stretch(inSamples[0                  :halfBeatSmpl+1       ], sr, THREE_QUARTERS), axis=0)
+    if(halfBeatSmpl < numSamples):
+        outSamples = np.append(outSamples, pyrb.pyrb.time_stretch(inSamples[halfBeatSmpl       :threeHalvesBeatSmpl+1], sr, THREE_HALVES  ), axis=0)
+    if(threeHalvesBeatSmpl < numSamples):
+        outSamples = np.append(outSamples, pyrb.pyrb.time_stretch(inSamples[threeHalvesBeatSmpl:numSamples+1         ], sr, THREE_QUARTERS), axis=0)
 
-    outSamples = outSamples[0:len(inSamples)]
+    #outSamples = outSamples[0:len(inSamples)]
     return outSamples
 
 #Take 4 beats worth of straight-beat input samples and half-time waltzify the rhythm at
 #inSamples should be of length 2*beatSampleLength, except at the end of a file/channel
 def waltzifyStraightBeatQuadHT(inSamples, beatSampleLength, sr):
-    lastSmpl      = len(inSamples) - 1
-    fullBeatSmpl  = min(round(beatSampleLength       ), lastSmpl)
-    threeBeatSmpl = min(round(beatSampleLength*THREEF), lastSmpl)
+    numSamples    = len(inSamples)
+    fullBeatSmpl  = min(round(beatSampleLength       ), numSamples)
+    threeBeatSmpl = min(round(beatSampleLength*THREEF), numSamples)
 
     outSamples = np.empty((0, 2), float)
-    if(0 < lastSmpl):
+    if(0 < numSamples):
         outSamples = np.append(outSamples, pyrb.pyrb.time_stretch(inSamples[0            :fullBeatSmpl ], sr, THREE_QUARTERS), axis=0)
-    if(fullBeatSmpl < lastSmpl):
+    if(fullBeatSmpl < numSamples):
         outSamples = np.append(outSamples, pyrb.pyrb.time_stretch(inSamples[fullBeatSmpl :threeBeatSmpl], sr, THREE_HALVES  ), axis=0)
-    if(threeBeatSmpl < lastSmpl):
-        outSamples = np.append(outSamples, pyrb.pyrb.time_stretch(inSamples[threeBeatSmpl:lastSmpl     ], sr, THREE_QUARTERS), axis=0)
+    if(threeBeatSmpl < numSamples):
+        outSamples = np.append(outSamples, pyrb.pyrb.time_stretch(inSamples[threeBeatSmpl:numSamples   ], sr, THREE_QUARTERS), axis=0)
 
-    outSamples = outSamples[0:len(inSamples)]
+    #outSamples = outSamples[0:len(inSamples)]
     return outSamples
 
 #Take 2 beats worth of swing-beat input samples and waltzify the rhythm
 #inSamples should be of length 2*beatSampleLength, except at the end of a file/channel
 def waltzifySwingBeatPair(inSamples, beatSampleLength, sr):
-    lastSmpl           = len(inSamples) - 1
-    fullBeatSmpl       = min(round(beatSampleLength            ), lastSmpl)
-    fiveThirdsBeatSmpl = min(round(beatSampleLength*FIVE_THIRDS), lastSmpl)
+    numSamples         = len(inSamples)
+    fullBeatSmpl       = min(round(beatSampleLength            ), numSamples)
+    fiveThirdsBeatSmpl = min(round(beatSampleLength*FIVE_THIRDS), numSamples)
 
     outSamples = np.empty((0, 2), float)
-    if(0 < lastSmpl):
+    if(0 < numSamples):
         outSamples = np.append(outSamples,                        inSamples[0                 :fullBeatSmpl      ],             axis=0) #rate unchanged
-    if(fullBeatSmpl < lastSmpl):
+    if(fullBeatSmpl < numSamples):
         outSamples = np.append(outSamples, pyrb.pyrb.time_stretch(inSamples[fullBeatSmpl      :fiveThirdsBeatSmpl], sr, TWOF ), axis=0)
-    if(fiveThirdsBeatSmpl < lastSmpl):
-        outSamples = np.append(outSamples, pyrb.pyrb.time_stretch(inSamples[fiveThirdsBeatSmpl:lastSmpl          ], sr, HALFF), axis=0)
+    if(fiveThirdsBeatSmpl < numSamples):
+        outSamples = np.append(outSamples, pyrb.pyrb.time_stretch(inSamples[fiveThirdsBeatSmpl:numSamples        ], sr, HALFF), axis=0)
 
     return outSamples
 
 #Take 4 beats worth of swing-beat input samples and half-time waltzify the rhythm
 #inSamples should be of length 2*beatSampleLength, except at the end of a file/channel
 def waltzifySwingBeatQuadHT(inSamples, beatSampleLength, sr):
-    lastSmpl             = len(inSamples) - 1
-    twoThirdsBeatSmpl    = min(round(beatSampleLength*TWO_THIRDS   ), lastSmpl)
-    fullBeatSmpl         = min(round(beatSampleLength*ONEF         ), lastSmpl)
-    fiveThirdsBeatSmpl   = min(round(beatSampleLength*FIVE_THIRDS  ), lastSmpl)
-    twoBeatSmpl          = min(round(beatSampleLength*TWOF         ), lastSmpl)
-    eightThirdsBeatSmpl  = min(round(beatSampleLength*EIGHT_THIRDS ), lastSmpl)
-    elevenThirdsBeatSmpl = min(round(beatSampleLength*ELEVEN_THIRDS), lastSmpl)
+    numSamples           = len(inSamples) - 1
+    twoThirdsBeatSmpl    = min(round(beatSampleLength*TWO_THIRDS   ), numSamples)
+    fullBeatSmpl         = min(round(beatSampleLength*ONEF         ), numSamples)
+    fiveThirdsBeatSmpl   = min(round(beatSampleLength*FIVE_THIRDS  ), numSamples)
+    twoBeatSmpl          = min(round(beatSampleLength*TWOF         ), numSamples)
+    eightThirdsBeatSmpl  = min(round(beatSampleLength*EIGHT_THIRDS ), numSamples)
+    elevenThirdsBeatSmpl = min(round(beatSampleLength*ELEVEN_THIRDS), numSamples)
 
     outSamples = np.empty((0, 2), float)
-    if(0                    < lastSmpl):
+    if(0                    < numSamples):
         outSamples = np.append(outSamples,                        inSamples[0                   :twoThirdsBeatSmpl    ],             axis=0) #rate unchanged
-    if(twoThirdsBeatSmpl    < lastSmpl):
+    if(twoThirdsBeatSmpl    < numSamples):
         outSamples = np.append(outSamples, pyrb.pyrb.time_stretch(inSamples[twoThirdsBeatSmpl   :fullBeatSmpl         ], sr, HALFF), axis=0)
-    if(fullBeatSmpl         < lastSmpl):
+    if(fullBeatSmpl         < numSamples):
         outSamples = np.append(outSamples, pyrb.pyrb.time_stretch(inSamples[fullBeatSmpl        :fiveThirdsBeatSmpl   ], sr, TWOF ), axis=0)
-    if(fiveThirdsBeatSmpl   < lastSmpl):
+    if(fiveThirdsBeatSmpl   < numSamples):
         outSamples = np.append(outSamples,                        inSamples[fiveThirdsBeatSmpl  :twoBeatSmpl          ],             axis=0) #rate unchanged
-    if(twoBeatSmpl          < lastSmpl):
+    if(twoBeatSmpl          < numSamples):
         outSamples = np.append(outSamples, pyrb.pyrb.time_stretch(inSamples[twoBeatSmpl         :eightThirdsBeatSmpl  ], sr, TWOF ), axis=0)
-    if(eightThirdsBeatSmpl  < lastSmpl):
+    if(eightThirdsBeatSmpl  < numSamples):
         outSamples = np.append(outSamples,                        inSamples[eightThirdsBeatSmpl :elevenThirdsBeatSmpl ],             axis=0) #rate unchanged
-    if(elevenThirdsBeatSmpl < lastSmpl):
-        outSamples = np.append(outSamples, pyrb.pyrb.time_stretch(inSamples[elevenThirdsBeatSmpl:lastSmpl             ], sr, HALFF), axis=0)
+    if(elevenThirdsBeatSmpl < numSamples):
+        outSamples = np.append(outSamples, pyrb.pyrb.time_stretch(inSamples[elevenThirdsBeatSmpl:numSamples           ], sr, HALFF), axis=0)
 
     return outSamples
 
@@ -115,14 +115,15 @@ def fileWaltzifier(inputFileName, bpm, sw, ht, beatDelayMS):
     beatDelaySamples = round(sr * (beatDelayMS / MS_PER_SECOND))
     currentSampleIdx = beatDelaySamples
 
-    outFileName = ''
+    outFileName = 'waltz'
     if ht:
-        outFileName = 'waltzht_' + inputFileName
-    else:
-        outFileName = 'waltz_'    + inputFileName
+        outFileName += 'ht'
+    
+    outFileName += '_' + inputFileName
 
     outSamples =  np.empty((0, 2), float)
-    outSamples = np.append(outSamples, inSamples[0:currentSampleIdx], axis=0)
+    if(currentSampleIdx > 0):
+        outSamples = np.append(outSamples, inSamples[0:currentSampleIdx], axis=0)
 
     beatSampleLength = float(sr * SECONDS_PER_MINUTEF / bpm)
     beatsPerWaltzSegment = 4 if ht else 2
@@ -130,8 +131,7 @@ def fileWaltzifier(inputFileName, bpm, sw, ht, beatDelayMS):
     while(currentSampleIdx < len(inSamples)):
         
         nextBeatSetSampleIdx = round((currentBeatPairIdx + 1) * beatsPerWaltzSegment * beatSampleLength) + beatDelaySamples
-        currentBeatPairInSamples = inSamples[currentSampleIdx:nextBeatSetSampleIdx]
-
+        currentBeatPairInSamples = inSamples[max(0, currentSampleIdx):nextBeatSetSampleIdx]
         if(sw):
             if(ht):
                 outSamples = np.append(outSamples, waltzifySwingBeatQuadHT(   currentBeatPairInSamples, beatSampleLength, sr), axis=0)
@@ -145,7 +145,6 @@ def fileWaltzifier(inputFileName, bpm, sw, ht, beatDelayMS):
         #Go to next beat index
         currentBeatPairIdx += 1
         currentSampleIdx = nextBeatSetSampleIdx
-        print(currentBeatPairIdx)
         
     print(len(inSamples))
     print(len(outSamples))
@@ -183,7 +182,7 @@ def main():
         elif(str(arg) == "ht"):
             ht = True
             print("Half-time waltz")
-        elif(int(arg) > 0):
+        elif(int(arg) != 0):
             beatDelayMS = int(arg)
             print("Beat delay of " + str(beatDelayMS) + "ms applied")
 
