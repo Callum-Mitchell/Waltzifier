@@ -9,7 +9,6 @@ import wave
 #Numerical constants
 ONEF   = float(1.0)
 TWOF   = float(2.0)
-THREEF = float(3.0)
 
 ONE_HALF       = float(0.5)
 THREE_HALVES   = float(1.5)
@@ -17,79 +16,64 @@ THREE_HALVES   = float(1.5)
 ONE_THIRD      = float(1.0/3.0)
 TWO_THIRDS     = float(2.0/3.0)
 FOUR_THIRDS    = float(4.0/3.0)
-FIVE_THIRDS    = float(5.0/3.0)
-EIGHT_THIRDS   = float(8.0/3.0)
-ELEVEN_THIRDS  = float(11.0/3.0)
-
-THREE_QUARTERS = float(0.75)
 
 SECONDS_PER_MINUTEF = float(60.0)
 MS_PER_SECOND       = float(1000.0)
 
 #TODOS:
-#Within getxxxBeatxxxTimeMap functions, encapsulate the repeated map-append logic into its own function 
 #Allow user to specify custom output file name
+
+#Conveneince function used by getxxxBeatxxxTimeMap to add a sample time mapping entry and update sample buffer position
+# @timeMap: the time mapping to append
+# @sampleOffset: the current input sample index within the local sample region
+# @waltzedSampleOffset: the current output sample index within the local sample region
+# @numSamples: the sample count within the local sample region
+# @globalSampleIndex: the initial sample index of the local sample region within the full input file
+# @beatSampleLength: the number of samples per beat in the input audio
+# @targetInSampleBeatDist: the number of beats between the current sample offset and the next target input sample position
+# @outputTimeStretch: time stretch factor in the output versus input audio between the current and next target samples 
+def appendTargetSampleMapping(timeMap, sampleOffset, waltzedSampleOffset, numSamples, globalSampleIdx, beatSampleLength, targetInSampleBeatDist, outputTimeStretch):
+    globalSampleOffset = globalSampleIdx + sampleOffset
+    globalWaltzedSampleOffset = globalSampleIdx + waltzedSampleOffset
+
+    nextTargetSmplDist        = min(round(beatSampleLength * targetInSampleBeatDist), numSamples - sampleOffset)
+    nextTargetWaltzedSmplDist = nextTargetSmplDist * outputTimeStretch
+
+    nextTargetGlobalSmpl        = globalSampleOffset + nextTargetSmplDist
+    nextTargetWaltzedGlobalSmpl = globalWaltzedSampleOffset + nextTargetWaltzedSmplDist
+
+    sampleOffset += nextTargetSmplDist
+    waltzedSampleOffset += nextTargetWaltzedSmplDist
+
+    return np.append(timeMap, [[nextTargetGlobalSmpl, nextTargetWaltzedGlobalSmpl]], axis=0), sampleOffset, waltzedSampleOffset
+
 
 #Take 2 beats worth of straight-beat input samples and return straight-to-waltzified time mapping
 # @inSamples: 2-beat section of input track samples - should be of length 2*beatSampleLength, or less at the end of an input sample set
 # @globalSampleIdx: the index of the first sample in the global buffer
 # @beatSampleLength: the number of audo samples per beat of the input track
 def getStraightBeatPairTimeMap(inSamples, globalSampleIdx, beatSampleLength):
+
     timeMap = np.empty((0, 2), int)
     numSamples = len(inSamples)
     sampleOffset = 0
     waltzedSampleOffset = 0
 
-    #OLD
-    # halfBeatSmpl        = min(round(beatSampleLength*HALFF       ), numSamples)
-    # threeHalvesBeatSmpl = min(round(beatSampleLength*THREE_HALVES), numSamples)
-    # twoBeatSmpl         = min(round(beatSampleLength*TWOF        ), numSamples)
-
     #Stretch the first (up to) 1/2 beat to (up to) 2/3 of a beat
     if(sampleOffset < numSamples):
-        globalSampleOffset = globalSampleIdx + sampleOffset
-        globalWaltzedSampleOffset = globalSampleIdx + waltzedSampleOffset
-
-        nextTargetSmplDist        = min(round(beatSampleLength*ONE_HALF), numSamples - sampleOffset)
-        nextTargetWaltzedSmplDist = nextTargetSmplDist * FOUR_THIRDS
-
-        nextTargetGlobalSmpl        = globalSampleOffset + nextTargetSmplDist
-        nextTargetWaltzedGlobalSmpl = globalWaltzedSampleOffset + nextTargetWaltzedSmplDist
-
-        timeMap = np.append(timeMap, [[nextTargetGlobalSmpl, nextTargetWaltzedGlobalSmpl]], axis=0)
-
-        sampleOffset += nextTargetSmplDist
-        waltzedSampleOffset += nextTargetWaltzedSmplDist
+        timeMap, sampleOffset, waltzedSampleOffset = appendTargetSampleMapping(
+            timeMap, sampleOffset, waltzedSampleOffset, numSamples, globalSampleIdx, beatSampleLength, ONE_HALF, FOUR_THIRDS
+        )
     #Condense the next (up to) 1 beat to (up to) 2/3 of a beat
     if(sampleOffset < numSamples):
-        globalSampleOffset = globalSampleIdx + sampleOffset
-        globalWaltzedSampleOffset = globalSampleIdx + waltzedSampleOffset
-
-        nextTargetSmplDist        = min(round(beatSampleLength*ONEF), numSamples - sampleOffset)
-        nextTargetWaltzedSmplDist = nextTargetSmplDist * TWO_THIRDS
-
-        nextTargetGlobalSmpl        = globalSampleOffset + nextTargetSmplDist
-        nextTargetWaltzedGlobalSmpl = globalWaltzedSampleOffset + nextTargetWaltzedSmplDist
-
-        timeMap = np.append(timeMap, [[nextTargetGlobalSmpl, nextTargetWaltzedGlobalSmpl]], axis=0)
-
-        sampleOffset += nextTargetSmplDist
-        waltzedSampleOffset += nextTargetWaltzedSmplDist
+        timeMap, sampleOffset, waltzedSampleOffset = appendTargetSampleMapping(
+            timeMap, sampleOffset, waltzedSampleOffset, numSamples, globalSampleIdx, beatSampleLength, ONEF, TWO_THIRDS
+        )
     #Stretch the last (up to) 1/2 beat to (up to) 2/3 of a beat
     if(sampleOffset < numSamples):
-        globalSampleOffset = globalSampleIdx + sampleOffset
-        globalWaltzedSampleOffset = globalSampleIdx + waltzedSampleOffset
-
-        nextTargetSmplDist        = min(round(beatSampleLength*ONE_HALF), numSamples - sampleOffset)
-        nextTargetWaltzedSmplDist = nextTargetSmplDist * FOUR_THIRDS
-
-        nextTargetGlobalSmpl        = globalSampleOffset + nextTargetSmplDist
-        nextTargetWaltzedGlobalSmpl = globalWaltzedSampleOffset + nextTargetWaltzedSmplDist
-
-        timeMap = np.append(timeMap, [[nextTargetGlobalSmpl, nextTargetWaltzedGlobalSmpl]], axis=0)
-
-        sampleOffset += nextTargetSmplDist
-        waltzedSampleOffset += nextTargetWaltzedSmplDist
+        timeMap, sampleOffset, waltzedSampleOffset = appendTargetSampleMapping(
+            timeMap, sampleOffset, waltzedSampleOffset, numSamples, globalSampleIdx, beatSampleLength, ONE_HALF, FOUR_THIRDS
+        )
 
     return timeMap
 
@@ -104,56 +88,21 @@ def getStraightBeatQuadTimeMapHT(inSamples, globalSampleIdx, beatSampleLength):
     sampleOffset = 0
     waltzedSampleOffset = 0
 
-    #OLD
-    # OneBeatSmpl        = min(round(beatSampleLength*HALFF       ), numSamples)
-    # threeBeatSmpl = min(round(beatSampleLength*THREE_HALVES), numSamples)
-    # twoBeatSmpl         = min(round(beatSampleLength*TWOF        ), numSamples)
-
     #Stretch the first (up to) 1 beat to (up to) 4/3 of a beat
     if(sampleOffset < numSamples):
-        globalSampleOffset = globalSampleIdx + sampleOffset
-        globalWaltzedSampleOffset = globalSampleIdx + waltzedSampleOffset
-
-        nextTargetSmplDist        = min(round(beatSampleLength*ONEF), numSamples - sampleOffset)
-        nextTargetWaltzedSmplDist = nextTargetSmplDist * FOUR_THIRDS
-
-        nextTargetGlobalSmpl        = globalSampleOffset + nextTargetSmplDist
-        nextTargetWaltzedGlobalSmpl = globalWaltzedSampleOffset + nextTargetWaltzedSmplDist
-
-        timeMap = np.append(timeMap, [[nextTargetGlobalSmpl, nextTargetWaltzedGlobalSmpl]], axis=0)
-
-        sampleOffset += nextTargetSmplDist
-        waltzedSampleOffset += nextTargetWaltzedSmplDist
+        timeMap, sampleOffset, waltzedSampleOffset = appendTargetSampleMapping(
+            timeMap, sampleOffset, waltzedSampleOffset, numSamples, globalSampleIdx, beatSampleLength, ONEF, FOUR_THIRDS
+        )
     #Condense the next (up to) 2 beats to (up to) 4/3 of a beat
     if(sampleOffset < numSamples):
-        globalSampleOffset = globalSampleIdx + sampleOffset
-        globalWaltzedSampleOffset = globalSampleIdx + waltzedSampleOffset
-
-        nextTargetSmplDist        = min(round(beatSampleLength*TWOF), numSamples - sampleOffset)
-        nextTargetWaltzedSmplDist = nextTargetSmplDist * TWO_THIRDS
-
-        nextTargetGlobalSmpl        = globalSampleOffset + nextTargetSmplDist
-        nextTargetWaltzedGlobalSmpl = globalWaltzedSampleOffset + nextTargetWaltzedSmplDist
-
-        timeMap = np.append(timeMap, [[nextTargetGlobalSmpl, nextTargetWaltzedGlobalSmpl]], axis=0)
-
-        sampleOffset += nextTargetSmplDist
-        waltzedSampleOffset += nextTargetWaltzedSmplDist
+        timeMap, sampleOffset, waltzedSampleOffset = appendTargetSampleMapping(
+            timeMap, sampleOffset, waltzedSampleOffset, numSamples, globalSampleIdx, beatSampleLength, TWOF, TWO_THIRDS
+        )
     #Stretch the last (up to) 1 beat to (up to) 4/3 of a beat
     if(sampleOffset < numSamples):
-        globalSampleOffset = globalSampleIdx + sampleOffset
-        globalWaltzedSampleOffset = globalSampleIdx + waltzedSampleOffset
-
-        nextTargetSmplDist        = min(round(beatSampleLength*ONEF), numSamples - sampleOffset)
-        nextTargetWaltzedSmplDist = nextTargetSmplDist * FOUR_THIRDS
-
-        nextTargetGlobalSmpl        = globalSampleOffset + nextTargetSmplDist
-        nextTargetWaltzedGlobalSmpl = globalWaltzedSampleOffset + nextTargetWaltzedSmplDist
-
-        timeMap = np.append(timeMap, [[nextTargetGlobalSmpl, nextTargetWaltzedGlobalSmpl]], axis=0)
-
-        sampleOffset += nextTargetSmplDist
-        waltzedSampleOffset += nextTargetWaltzedSmplDist
+        timeMap, sampleOffset, waltzedSampleOffset = appendTargetSampleMapping(
+            timeMap, sampleOffset, waltzedSampleOffset, numSamples, globalSampleIdx, beatSampleLength, ONEF, FOUR_THIRDS
+        )
 
     return timeMap
 
@@ -170,49 +119,19 @@ def getSwingBeatPairTimeMap(inSamples, globalSampleIdx, beatSampleLength):
 
     #Leave the first (up to) 1 beat unchanged
     if(sampleOffset < numSamples):
-        globalSampleOffset = globalSampleIdx + sampleOffset
-        globalWaltzedSampleOffset = globalSampleIdx + waltzedSampleOffset
-
-        nextTargetSmplDist        = min(round(beatSampleLength*ONEF), numSamples - sampleOffset)
-        nextTargetWaltzedSmplDist = nextTargetSmplDist * ONEF
-
-        nextTargetGlobalSmpl        = globalSampleOffset + nextTargetSmplDist
-        nextTargetWaltzedGlobalSmpl = globalWaltzedSampleOffset + nextTargetWaltzedSmplDist
-
-        timeMap = np.append(timeMap, [[nextTargetGlobalSmpl, nextTargetWaltzedGlobalSmpl]], axis=0)
-
-        sampleOffset += nextTargetSmplDist
-        waltzedSampleOffset += nextTargetWaltzedSmplDist
+        timeMap, sampleOffset, waltzedSampleOffset = appendTargetSampleMapping(
+            timeMap, sampleOffset, waltzedSampleOffset, numSamples, globalSampleIdx, beatSampleLength, ONEF, ONEF
+        )
     #Condense the next (up to) 2/3 of a beat to (up to) 1/3 of a beat
     if(sampleOffset < numSamples):
-        globalSampleOffset = globalSampleIdx + sampleOffset
-        globalWaltzedSampleOffset = globalSampleIdx + waltzedSampleOffset
-
-        nextTargetSmplDist        = min(round(beatSampleLength*TWO_THIRDS), numSamples - sampleOffset)
-        nextTargetWaltzedSmplDist = nextTargetSmplDist * ONE_HALF
-
-        nextTargetGlobalSmpl        = globalSampleOffset + nextTargetSmplDist
-        nextTargetWaltzedGlobalSmpl = globalWaltzedSampleOffset + nextTargetWaltzedSmplDist
-
-        timeMap = np.append(timeMap, [[nextTargetGlobalSmpl, nextTargetWaltzedGlobalSmpl]], axis=0)
-
-        sampleOffset += nextTargetSmplDist
-        waltzedSampleOffset += nextTargetWaltzedSmplDist
-    #Stretch the last (up to) 1/3 beat to (up to) 2/3 of a beat
+         timeMap, sampleOffset, waltzedSampleOffset = appendTargetSampleMapping(
+            timeMap, sampleOffset, waltzedSampleOffset, numSamples, globalSampleIdx, beatSampleLength, TWO_THIRDS, ONE_HALF
+        )
+   #Stretch the last (up to) 1/3 beat to (up to) 2/3 of a beat
     if(sampleOffset < numSamples):
-        globalSampleOffset = globalSampleIdx + sampleOffset
-        globalWaltzedSampleOffset = globalSampleIdx + waltzedSampleOffset
-
-        nextTargetSmplDist        = min(round(beatSampleLength*ONE_THIRD), numSamples - sampleOffset)
-        nextTargetWaltzedSmplDist = nextTargetSmplDist * TWOF
-
-        nextTargetGlobalSmpl        = globalSampleOffset + nextTargetSmplDist
-        nextTargetWaltzedGlobalSmpl = globalWaltzedSampleOffset + nextTargetWaltzedSmplDist
-
-        timeMap = np.append(timeMap, [[nextTargetGlobalSmpl, nextTargetWaltzedGlobalSmpl]], axis=0)
-
-        sampleOffset += nextTargetSmplDist
-        waltzedSampleOffset += nextTargetWaltzedSmplDist
+        timeMap, sampleOffset, waltzedSampleOffset = appendTargetSampleMapping(
+            timeMap, sampleOffset, waltzedSampleOffset, numSamples, globalSampleIdx, beatSampleLength, ONE_THIRD, TWOF
+        )
 
     return timeMap
 
@@ -229,109 +148,39 @@ def getSwingBeatQuadTimeMapHT(inSamples, globalSampleIdx, beatSampleLength):
 
     #Leave the first (up to) 2/3 of a beat unchanged
     if(sampleOffset < numSamples):
-        globalSampleOffset = globalSampleIdx + sampleOffset
-        globalWaltzedSampleOffset = globalSampleIdx + waltzedSampleOffset
-
-        nextTargetSmplDist        = min(round(beatSampleLength*TWO_THIRDS), numSamples - sampleOffset)
-        nextTargetWaltzedSmplDist = nextTargetSmplDist * ONEF
-
-        nextTargetGlobalSmpl        = globalSampleOffset + nextTargetSmplDist
-        nextTargetWaltzedGlobalSmpl = globalWaltzedSampleOffset + nextTargetWaltzedSmplDist
-
-        timeMap = np.append(timeMap, [[nextTargetGlobalSmpl, nextTargetWaltzedGlobalSmpl]], axis=0)
-
-        sampleOffset += nextTargetSmplDist
-        waltzedSampleOffset += nextTargetWaltzedSmplDist
+        timeMap, sampleOffset, waltzedSampleOffset = appendTargetSampleMapping(
+            timeMap, sampleOffset, waltzedSampleOffset, numSamples, globalSampleIdx, beatSampleLength, TWO_THIRDS, ONEF
+        )
     #Stretch the next (up to) 1/3 of a beat to (up to) 2/3 of a beat
     if(sampleOffset < numSamples):
-        globalSampleOffset = globalSampleIdx + sampleOffset
-        globalWaltzedSampleOffset = globalSampleIdx + waltzedSampleOffset
-
-        nextTargetSmplDist        = min(round(beatSampleLength*ONE_THIRD), numSamples - sampleOffset)
-        nextTargetWaltzedSmplDist = nextTargetSmplDist * TWOF
-
-        nextTargetGlobalSmpl        = globalSampleOffset + nextTargetSmplDist
-        nextTargetWaltzedGlobalSmpl = globalWaltzedSampleOffset + nextTargetWaltzedSmplDist
-
-        timeMap = np.append(timeMap, [[nextTargetGlobalSmpl, nextTargetWaltzedGlobalSmpl]], axis=0)
-
-        sampleOffset += nextTargetSmplDist
-        waltzedSampleOffset += nextTargetWaltzedSmplDist
+        timeMap, sampleOffset, waltzedSampleOffset = appendTargetSampleMapping(
+            timeMap, sampleOffset, waltzedSampleOffset, numSamples, globalSampleIdx, beatSampleLength, ONE_THIRD, TWOF
+        )
     #Condense the next (up to) 2/3 beat to (up to) 1/3 of a beat
     if(sampleOffset < numSamples):
-        globalSampleOffset = globalSampleIdx + sampleOffset
-        globalWaltzedSampleOffset = globalSampleIdx + waltzedSampleOffset
-
-        nextTargetSmplDist        = min(round(beatSampleLength*TWO_THIRDS), numSamples - sampleOffset)
-        nextTargetWaltzedSmplDist = nextTargetSmplDist * ONE_HALF
-
-        nextTargetGlobalSmpl        = globalSampleOffset + nextTargetSmplDist
-        nextTargetWaltzedGlobalSmpl = globalWaltzedSampleOffset + nextTargetWaltzedSmplDist
-
-        timeMap = np.append(timeMap, [[nextTargetGlobalSmpl, nextTargetWaltzedGlobalSmpl]], axis=0)
-
-        sampleOffset += nextTargetSmplDist
-        waltzedSampleOffset += nextTargetWaltzedSmplDist
+        timeMap, sampleOffset, waltzedSampleOffset = appendTargetSampleMapping(
+            timeMap, sampleOffset, waltzedSampleOffset, numSamples, globalSampleIdx, beatSampleLength, TWO_THIRDS, ONE_HALF
+        )
     #Leave the next (up to) 1/3 beat unchanged
     if(sampleOffset < numSamples):
-        globalSampleOffset = globalSampleIdx + sampleOffset
-        globalWaltzedSampleOffset = globalSampleIdx + waltzedSampleOffset
-
-        nextTargetSmplDist        = min(round(beatSampleLength*ONE_THIRD), numSamples - sampleOffset)
-        nextTargetWaltzedSmplDist = nextTargetSmplDist * ONEF
-
-        nextTargetGlobalSmpl        = globalSampleOffset + nextTargetSmplDist
-        nextTargetWaltzedGlobalSmpl = globalWaltzedSampleOffset + nextTargetWaltzedSmplDist
-
-        timeMap = np.append(timeMap, [[nextTargetGlobalSmpl, nextTargetWaltzedGlobalSmpl]], axis=0)
-
-        sampleOffset += nextTargetSmplDist
-        waltzedSampleOffset += nextTargetWaltzedSmplDist
+        timeMap, sampleOffset, waltzedSampleOffset = appendTargetSampleMapping(
+            timeMap, sampleOffset, waltzedSampleOffset, numSamples, globalSampleIdx, beatSampleLength, ONE_THIRD, ONEF
+        )
     #Condense the next (up to) 2/3 beat to (up to) 1/3 of a beat
     if(sampleOffset < numSamples):
-        globalSampleOffset = globalSampleIdx + sampleOffset
-        globalWaltzedSampleOffset = globalSampleIdx + waltzedSampleOffset
-
-        nextTargetSmplDist        = min(round(beatSampleLength*TWO_THIRDS), numSamples - sampleOffset)
-        nextTargetWaltzedSmplDist = nextTargetSmplDist * ONE_HALF
-
-        nextTargetGlobalSmpl        = globalSampleOffset + nextTargetSmplDist
-        nextTargetWaltzedGlobalSmpl = globalWaltzedSampleOffset + nextTargetWaltzedSmplDist
-
-        timeMap = np.append(timeMap, [[nextTargetGlobalSmpl, nextTargetWaltzedGlobalSmpl]], axis=0)
-
-        sampleOffset += nextTargetSmplDist
-        waltzedSampleOffset += nextTargetWaltzedSmplDist
+        timeMap, sampleOffset, waltzedSampleOffset = appendTargetSampleMapping(
+            timeMap, sampleOffset, waltzedSampleOffset, numSamples, globalSampleIdx, beatSampleLength, TWO_THIRDS, ONE_HALF
+        )
     #Leave the next (up to) 1 beat unchanged
     if(sampleOffset < numSamples):
-        globalSampleOffset = globalSampleIdx + sampleOffset
-        globalWaltzedSampleOffset = globalSampleIdx + waltzedSampleOffset
-
-        nextTargetSmplDist        = min(round(beatSampleLength*ONEF), numSamples - sampleOffset)
-        nextTargetWaltzedSmplDist = nextTargetSmplDist * ONEF
-
-        nextTargetGlobalSmpl        = globalSampleOffset + nextTargetSmplDist
-        nextTargetWaltzedGlobalSmpl = globalWaltzedSampleOffset + nextTargetWaltzedSmplDist
-
-        timeMap = np.append(timeMap, [[nextTargetGlobalSmpl, nextTargetWaltzedGlobalSmpl]], axis=0)
-
-        sampleOffset += nextTargetSmplDist
-        waltzedSampleOffset += nextTargetWaltzedSmplDist
+        timeMap, sampleOffset, waltzedSampleOffset = appendTargetSampleMapping(
+            timeMap, sampleOffset, waltzedSampleOffset, numSamples, globalSampleIdx, beatSampleLength, ONEF, ONEF
+        )
     #Stretch the last (up to) 1/3 of a beat to (up to) 2/3 of a beat
     if(sampleOffset < numSamples):
-        globalSampleOffset = globalSampleIdx + sampleOffset
-        globalWaltzedSampleOffset = globalSampleIdx + waltzedSampleOffset
-
-        nextTargetSmplDist        = min(round(beatSampleLength*ONE_THIRD), numSamples - sampleOffset)
-        nextTargetWaltzedSmplDist = nextTargetSmplDist * TWOF
-
-        nextTargetGlobalSmpl        = globalSampleOffset + nextTargetSmplDist
-        nextTargetWaltzedGlobalSmpl = globalWaltzedSampleOffset + nextTargetWaltzedSmplDist
-
-        timeMap = np.append(timeMap, [[nextTargetGlobalSmpl, nextTargetWaltzedGlobalSmpl]], axis=0)
-
-        sampleOffset += nextTargetSmplDist
-        waltzedSampleOffset += nextTargetWaltzedSmplDist
+        timeMap, sampleOffset, waltzedSampleOffset = appendTargetSampleMapping(
+            timeMap, sampleOffset, waltzedSampleOffset, numSamples, globalSampleIdx, beatSampleLength, ONE_THIRD, TWOF
+        )
 
     return timeMap
 
@@ -355,12 +204,11 @@ def fileWaltzifier(inputFileName, bpm, sw, ht, beatDelayMS):
     
     outFileName += '_' + inputFileName
 
-
-    #NEW: create array of output timestamps to match input timestamps to
+    #Create map from input to output sample timestamps
     waltzSampleTimeMap = np.empty((0, 2), int)
     waltzSampleTimeMap = np.append(waltzSampleTimeMap, [[0, 0]], axis=0)
 
-    #NEW: handle beat sync offset
+    #Handle beat sync offset
     if(currentSampleIdx > 0):
         waltzSampleTimeMap = np.append(waltzSampleTimeMap, [[currentSampleIdx, currentSampleIdx]], axis=0)
 
