@@ -1,17 +1,13 @@
-from colorsys import TWO_THIRD
 import numpy as np
 import pyrubberband as pyrb
-import pyogg
-import soundfile as sf #For creating output files
+import soundfile as sf
 import sys
-import wave
 
 #Numerical constants
 ONEF   = float(1.0)
 TWOF   = float(2.0)
 
 ONE_HALF       = float(0.5)
-THREE_HALVES   = float(1.5)
 
 ONE_THIRD      = float(1.0/3.0)
 TWO_THIRDS     = float(2.0/3.0)
@@ -22,8 +18,10 @@ MS_PER_SECOND       = float(1000.0)
 
 #TODOS:
 #Allow user to specify custom output file name
+#Create a separate script to repeatedly call fileWaltzifier, and waltzify each version of the whole soundtrack
+#General cleanup
 
-#Conveneince function used by getxxxBeatxxxTimeMap to add a sample time mapping entry and update sample buffer position
+# Conveneince function used by getxxxBeatxxxTimeMap to add a sample time mapping entry and update sample buffer position
 # @timeMap: the time mapping to append
 # @sampleOffset: the current input sample index within the local sample region
 # @waltzedSampleOffset: the current output sample index within the local sample region
@@ -184,12 +182,12 @@ def getSwingBeatQuadTimeMapHT(inSamples, globalSampleIdx, beatSampleLength):
 
     return timeMap
 
-def fileWaltzifier(inputFileName, bpm, sw, ht, beatDelayMS):
+def fileWaltzifier(inFilePath, bpm, sw, ht, beatDelayMS, outFilePath):
 
     #Input samples
-    inSamples, sr = sf.read(inputFileName)
+    inSamples, sr = sf.read(inFilePath)
     if(len(inSamples) == 0):
-        print("Unable to read audio file: " + inputFileName)
+        print("Unable to read audio file: " + inFilePath)
         exit()
 
     
@@ -198,11 +196,14 @@ def fileWaltzifier(inputFileName, bpm, sw, ht, beatDelayMS):
     currentSampleIdx = beatDelaySamples
 
     #Output file properties
-    outFileName = 'waltz'
-    if ht:
-        outFileName += 'ht'
+    if not outFilePath:
+        #Split input directory and file name
+        inDirectory, splitter, inFileName = inFilePath.replace("\\", "/").rpartition("/")
+        outFilePath = inDirectory + splitter + 'waltz'
+        if ht:
+            outFilePath += 'ht'
     
-    outFileName += '_' + inputFileName
+        outFilePath += '_' + inFileName
 
     #Create map from input to output sample timestamps
     waltzSampleTimeMap = np.empty((0, 2), int)
@@ -236,45 +237,64 @@ def fileWaltzifier(inputFileName, bpm, sw, ht, beatDelayMS):
     #Using the final time map, stretch the whole song at once
     outSamples = pyrb.pyrb.timemap_stretch(inSamples, sr, waltzSampleTimeMap)
     
-    sf.write(outFileName, outSamples, sr, format='wav')
-    print('Successfully wrote to ' + outFileName)
+    sf.write(outFilePath, outSamples, sr, format='wav')
+    print('Successfully wrote to ' + outFilePath)
 
 
 def main():
     print(sf.__libsndfile_version__)
     args = sys.argv[1:]
     if len(args) < 2:
-        print("Usage: walzifier.py infile bpm [sw, ht, beatdelay]\n")
-        print("infile: input file name (.ogg)")
+        print("Usage: walzifier.py infile bpm [sw] [ht] [-delay beatdelayms] [-out outfile]\n")
+        print("infile: input file path (.ogg)")
         print("bpm: speed of song in beats per minute")
         print("sw: use to indicate the input has a swing rhythm")
         print("ht: use to produce a half-time waltz rhythm (4 beats/measure instead of 2)")
-        print("beatdelay: delay in milliseconds before the first beat; use if the timing/rhythm sounds off\n")
+        print("-delay: specify delay in milliseconds before the first beat; use if the timing/rhythm sounds off\n")
+        print("-out: specify a custom output file path (.ogg recommended). Default is \"waltz\" [+ \"ht\"] + \"_\" + <input file name> in the current directory")
         print("Example: waltzifier.py zone_1_3.ogg 140")
-        print("Example: waltzifier.py zone_2_3.ogg 150 ht sw 0\n")
+        print("Example: waltzifier.py zone_2_3.ogg 150 ht sw -delay 10 -out ./test/zone_2_3_halftimeswing.ogg\n")
         exit()
 
-    inFileName = args[0]
+    inFilePath = args[0]
+    outFilePath = ""
     bpm = int(args[1])
     if(bpm <= 0):
-        print("BPM must be greater than 0")
+        print("Error: BPM must be greater than 0")
         exit()
     
     sw = False
     ht = False
     beatDelayMS = 0
-    for arg in args[2:]:
-        if(str(arg) == "sw"):
+    i = 2
+    while i < len(args):
+        arg = args[i]
+        if str(arg) == "sw":
             sw = True
             print("Swing mode activated!")
-        elif(str(arg) == "ht"):
+            i += 1
+        elif str(arg) == "ht":
             ht = True
             print("Half-time waltz")
-        elif(int(arg) != 0):
-            beatDelayMS = int(arg)
+            i += 1
+        elif str(arg) == "-out":
+            if i == len(args) - 1:
+                print("Error: -out option must be followed by an output file path")
+                exit()
+            outFilePath = str(args[i+1])
+            i += 2
+        elif str(arg) == "-delay":
+            if i == len(args) - 1 or int(args[i+1]) == 0:
+                print("Error: -delay option must be followed by a number (beat delay in milliseconds)")
+            
+            beatDelayMS = int(args[i+1])
             print("Beat delay of " + str(beatDelayMS) + "ms applied")
+            i += 2
+        else:
+            print("Warning: unrecognized argument \"" + str(arg) + "\"")
+            i += 1
 
-    fileWaltzifier(inFileName, bpm, sw, ht, beatDelayMS)
+    fileWaltzifier(inFilePath, bpm, sw, ht, beatDelayMS, outFilePath)
 
     
 
