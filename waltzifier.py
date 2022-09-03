@@ -182,7 +182,15 @@ def getSwingBeatQuadTimeMapHT(inSamples, globalSampleIdx, beatSampleLength):
 
     return timeMap
 
-def fileWaltzifier(inFilePath, bpm, sw, ht, beatDelayMS, outFilePath):
+
+#Procedurally time-stretches an audio file from a straight/swing rhythm to a waltz rhythm
+# @inFilePath: name/path to input audio file
+# @bpm: tempo of the input audio track in beats per minute
+# @sw: indicates the input audio track has a swing rhythm (False=straight rhythm)
+# @ht: set true to produce a half-time (slower) waltz output track (False=full-time waltz)
+# @beatDelayMs: specify delay in milliseconds before the first "beat" of the input track (useful for rhythm-syncing)
+# @outFilePath: name/path to produce output audio file (default if empty: <input file directory + "waltz" (+ "ht") + "_" + <input file name>)
+def fileWaltzifier(inFilePath, bpm, sw, ht, beatDelayMs, outFilePath):
 
     #Input samples
     inSamples, sr = sf.read(inFilePath)
@@ -192,7 +200,7 @@ def fileWaltzifier(inFilePath, bpm, sw, ht, beatDelayMS, outFilePath):
 
     
     currentBeatPairIdx = 0
-    beatDelaySamples = round(sr * (beatDelayMS / MS_PER_SECOND))
+    beatDelaySamples = round(sr * (beatDelayMs / MS_PER_SECOND))
     currentSampleIdx = beatDelaySamples
 
     #Output file properties
@@ -265,7 +273,7 @@ def main():
     
     sw = False
     ht = False
-    beatDelayMS = 0
+    beatDelayMs = 0
     i = 2
     while i < len(args):
         arg = args[i]
@@ -287,14 +295,14 @@ def main():
             if i == len(args) - 1 or int(args[i+1]) == 0:
                 print("Error: -delay option must be followed by a number (beat delay in milliseconds)")
             
-            beatDelayMS = int(args[i+1])
-            print("Beat delay of " + str(beatDelayMS) + "ms applied")
+            beatDelayMs = int(args[i+1])
+            print("Beat delay of " + str(beatDelayMs) + "ms applied")
             i += 2
         else:
             print("Warning: unrecognized argument \"" + str(arg) + "\"")
             i += 1
 
-    fileWaltzifier(inFilePath, bpm, sw, ht, beatDelayMS, outFilePath)
+    fileWaltzifier(inFilePath, bpm, sw, ht, beatDelayMs, outFilePath)
 
     
 
