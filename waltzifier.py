@@ -220,6 +220,9 @@ def waltzifyFile(waltzParams: WaltzParams):
     
         waltzParams.outFilePath += '_' + inFileName
     
+    #Sorted ordering needed for waltz timeswitching to work
+        waltzParams.timeSwitchBeats.sort(reverse=True)
+
     #Parse custom beat samples if available
     customBeatSamples = []
     if len(waltzParams.beatmapFile) > 0:
@@ -374,7 +377,6 @@ def main():
     if not bpm and not customBeatmapFile:
         print("Error: either BPM or beatmap file is required")
         exit()
-    timeSwitchBeats.sort(reverse=True)
     waltzParams = WaltzParams.WaltzParams(inFilePath, bpm, sw, ht, beatDelayMs, outFilePath, timeSwitchBeats, customBeatmapFile)
     waltzifyFile(waltzParams)
     exit()
