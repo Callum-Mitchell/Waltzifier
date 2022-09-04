@@ -319,24 +319,24 @@ def main():
     customBeatmapFile = ""
     while i < len(args):
         arg = args[i]
-        if str(arg) == "sw":
+        if arg == "sw":
             sw = True
             print("Swing mode activated!")
             i += 1
 
-        elif str(arg) == "ht":
+        elif arg == "ht":
             ht = True
             print("Half-time waltz")
             i += 1
 
-        elif str(arg) == "-out":
+        elif arg == "-out":
             if i == len(args) - 1:
                 print("Error: -out option must be followed by an output file path")
                 exit()
-            outFilePath = str(args[i+1])
+            outFilePath = args[i+1]
             i += 2
 
-        elif str(arg) == "-bpm":
+        elif arg == "-bpm":
             if i == len(args) - 1 or not float(args[i+1]):
                 print("Error: -bpm flag must be followed by a number (tempo in beats per minute)")
                 exit()
@@ -346,29 +346,29 @@ def main():
                 exit()
             i += 2
 
-        elif str(arg) == "-delay":
+        elif arg == "-delay":
             if i == len(args) - 1 or not int(args[i+1]):
                 print("Error: -delay option must be followed by a number (beat delay in milliseconds)")    
             beatDelayMs = int(args[i+1])
             print("Beat delay of " + str(beatDelayMs) + "ms applied")
             i += 2
 
-        elif str(arg) == "-timeswitch":
+        elif arg == "-timeswitch":
             if i == len(args) - 1 or not int(args[i+1]):
                 print("Error: -timeswitch option must be followed by a number (beat on which to timeswitch)")
                 exit()
             timeSwitchBeats.append(int(args[i+1]))
             i += 2
 
-        elif str(arg) == "-beatmap":
+        elif arg == "-beatmap":
             if i == len(args) - 1:
                 print("Error: -timeswitch option must be followed by a decimal number (change in bpm per beat)")
                 exit()
-            customBeatmapFile = str(args[i+1])
+            customBeatmapFile = args[i+1]
             i += 2
 
         else:
-            print("Warning: unrecognized argument \"" + str(arg) + "\"")
+            print("Warning: unrecognized argument \"" + arg + "\"")
             i += 1
     
     if not bpm and not customBeatmapFile:
