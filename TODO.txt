@@ -1,0 +1,5 @@
+TODOS (all):
+- Implement a timeSwitchBeats waltz parameter to allow for mixed-time waltz for certain songs
+- Implement a deltaBPM or bpmSwitchPoints parameter to handle songs with variable tempo
+- Decide which songs work best at half tempo vs full tempo waltz
+- Create a script to repeatedly call Waltifier.waltzifyFile designed to waltzify each version of the whole soundtrack

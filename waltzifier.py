@@ -10,7 +10,7 @@ import numpy as np
 import pyrubberband as pyrb
 import soundfile as sf
 import sys
-
+import WaltzParams
 #Numerical constants
 _ONEF                = float(1.0)
 _TWOF                = float(2.0)
@@ -23,9 +23,6 @@ _FOUR_THIRDS         = float(4.0/3.0)
 
 _SECONDS_PER_MINUTEF = float(60.0)
 _MS_PER_SECOND       = float(1000.0)
-
-#TODOS:
-#Create a separate script to repeatedly call fileWaltzifier, and waltzify each version of the whole soundtrack
 
 def _appendTargetSampleMapping(timeMap, sampleOffset, waltzedSampleOffset, numSamples, globalSampleIdx, beatSampleLength, targetInSampleBeatDist, outputTimeStretch):
     """! Conveneince function used by getxxxBeatxxxTimeMap* to add a sample time mapping entry and update sample buffer position
@@ -193,7 +190,7 @@ def _getSwingBeatQuadTimeMapHT(inSamples, globalSampleIdx, beatSampleLength):
 
     return timeMap
 
-def fileWaltzifier(inFilePath, bpm, sw, ht, beatDelayMs, outFilePath):
+def waltzifyFile(waltzParams: WaltzParams):
     """! Procedurally time-stretches an audio file from a straight/swing rhythm to a waltz rhythm
     @param inFilePath: name/path to input audio file
     @param bpm: tempo of the input audio track in beats per minute
@@ -203,25 +200,25 @@ def fileWaltzifier(inFilePath, bpm, sw, ht, beatDelayMs, outFilePath):
     @param outFilePath: name/path to produce output audio file (default if empty: <input file directory> + "waltz" [+ "ht" if half-time] + "_" + <input file name>)
     """
     #Input samples
-    inSamples, sr = sf.read(inFilePath)
+    inSamples, sr = sf.read(waltzParams.inFilePath)
     if(len(inSamples) == 0):
-        print("Unable to read audio file: " + inFilePath)
+        print("Unable to read audio file: " + waltzParams.inFilePath)
         exit()
 
     
     currentBeatPairIdx = 0
-    beatDelaySamples = round(sr * (beatDelayMs / _MS_PER_SECOND))
+    beatDelaySamples = round(sr * (waltzParams.beatDelayMs / _MS_PER_SECOND))
     currentSampleIdx = beatDelaySamples
 
     #Output file properties
-    if not outFilePath:
+    if not waltzParams.outFilePath:
         #Split input directory and file name
-        inDirectory, splitter, inFileName = inFilePath.replace("\\", "/").rpartition("/")
-        outFilePath = inDirectory + splitter + 'waltz'
-        if ht:
-            outFilePath += 'ht'
+        inDirectory, splitter, inFileName = waltzParams.inFilePath.replace("\\", "/").rpartition("/")
+        waltzParams.outFilePath = inDirectory + splitter + 'waltz'
+        if waltzParams.ht:
+            waltzParams.outFilePath += 'ht'
     
-        outFilePath += '_' + inFileName
+        waltzParams.outFilePath += '_' + inFileName
 
     #Create map from input to output sample timestamps
     waltzSampleTimeMap = np.empty((0, 2), int)
@@ -231,20 +228,20 @@ def fileWaltzifier(inFilePath, bpm, sw, ht, beatDelayMs, outFilePath):
     if(currentSampleIdx > 0):
         waltzSampleTimeMap = np.append(waltzSampleTimeMap, [[currentSampleIdx, currentSampleIdx]], axis=0)
 
-    beatSampleLength = float(sr * _SECONDS_PER_MINUTEF / bpm)
-    beatsPerWaltzSegment = 4 if ht else 2
+    beatSampleLength = float(sr * _SECONDS_PER_MINUTEF / waltzParams.bpm)
+    beatsPerWaltzSegment = 4 if waltzParams.ht else 2
 
     #NEW: work through the file 2 (or 4 for half time) beats at a time and call waltzifying functions
     while(currentSampleIdx < len(inSamples)):
         nextBeatSetSampleIdx = round((currentBeatPairIdx + 1) * beatsPerWaltzSegment * beatSampleLength) + beatDelaySamples
         currentBeatPairInSamples = inSamples[max(0, currentSampleIdx):nextBeatSetSampleIdx]
-        if(sw):
-            if(ht):
+        if(waltzParams.sw):
+            if(waltzParams.ht):
                 waltzSampleTimeMap = np.append(waltzSampleTimeMap, _getSwingBeatQuadTimeMapHT(   currentBeatPairInSamples, currentSampleIdx, beatSampleLength), axis=0)
             else:
                 waltzSampleTimeMap = np.append(waltzSampleTimeMap, _getSwingBeatPairTimeMap(     currentBeatPairInSamples, currentSampleIdx, beatSampleLength), axis=0)
         else:
-            if(ht):
+            if(waltzParams.ht):
                 waltzSampleTimeMap = np.append(waltzSampleTimeMap, _getStraightBeatQuadTimeMapHT(currentBeatPairInSamples, currentSampleIdx, beatSampleLength), axis=0)
             else:        
                 waltzSampleTimeMap = np.append(waltzSampleTimeMap, _getStraightBeatPairTimeMap(  currentBeatPairInSamples, currentSampleIdx, beatSampleLength), axis=0)
@@ -255,12 +252,11 @@ def fileWaltzifier(inFilePath, bpm, sw, ht, beatDelayMs, outFilePath):
     #Using the final time map, stretch the whole song at once
     outSamples = pyrb.pyrb.timemap_stretch(inSamples, sr, waltzSampleTimeMap)
     
-    sf.write(outFilePath, outSamples, sr, format='wav')
-    print('Successfully wrote to ' + outFilePath)
+    sf.write(waltzParams.outFilePath, outSamples, sr, format='wav')
+    print('Successfully wrote to ' + waltzParams.outFilePath)
 
 def main():
     """! Main program entry; provides command interface for song waltzification"""
-    print(sf.__libsndfile_version__)
     args = sys.argv[1:]
     if len(args) < 2:
         print("Usage: walzifier.py infile bpm [sw] [ht] [-delay beatdelayms] [-out outfile]\n")
@@ -311,8 +307,9 @@ def main():
         else:
             print("Warning: unrecognized argument \"" + str(arg) + "\"")
             i += 1
-
-    fileWaltzifier(inFilePath, bpm, sw, ht, beatDelayMs, outFilePath)    
+    
+    waltzParams = WaltzParams.WaltzParams(inFilePath, bpm, sw, ht, beatDelayMs, outFilePath)
+    waltzifyFile(waltzParams)    
     exit()
 
 if __name__=="__main__":
