@@ -1,0 +1,35 @@
+import WaltzParams
+
+"""! Lookup dictionary for waltz parameters in the A-Rival soundtrack"""
+ARIVAL_SONG_PARAMS = dict({
+    'boss_1_1':   WaltzParams.WaltzParams("../../data/music/boss_1_1.ogg",   120, False, False, 10, "./music/boss_1_1.ogg"  ),
+    'boss_2_1':   WaltzParams.WaltzParams("../../data/music/boss_2_1.ogg",   175, False, False, 10, "./music/boss_2_1.ogg"  ),
+    'boss_3_1':   WaltzParams.WaltzParams("../../data/music/boss_3_1.ogg",   123, True,  False, 10, "./music/boss_3_1.ogg"  ),
+    'boss_4_1':   WaltzParams.WaltzParams("../../data/music/boss_4_1.ogg",   126, False, True,  10, "./music/boss_4_1.ogg"  ),
+    'boss_5_1':   WaltzParams.WaltzParams("../../data/music/boss_5_1.ogg",   140, False, False, 10, "./music/boss_5_1.ogg"  ),
+    'boss_6_1':   WaltzParams.WaltzParams("../../data/music/boss_6_1.ogg",   140, False, False, 10, "./music/boss_6_1.ogg"  ),
+    'boss_6_1a':  WaltzParams.WaltzParams("../../data/music/boss_6_1a.ogg",  160, False, False, 10, "./music/boss_6_1a.ogg" ),
+    'boss_7_1':   WaltzParams.WaltzParams("../../data/music/boss_7_1.ogg",   0,   False, False, 10, "./music/boss_7_1.ogg",  [], "../../data/music/boss_7.txt"),
+    'boss_8_1':   WaltzParams.WaltzParams("../../data/music/boss_8_1.ogg",   120, False, True,  10, "./music/boss_8_1.ogg",  [48]),
+    'boss_9_1':   WaltzParams.WaltzParams("../../data/music/boss_9_1.ogg",   150, False, False, 10, "./music/boss_9_1.ogg"  ),
+    'lobby_1':    WaltzParams.WaltzParams("../../data/music/lobby_1.ogg",    130, False, False, 10, "./music/lobby_1.ogg"   ),
+    'training_1': WaltzParams.WaltzParams("../../data/music/training_1.ogg", 120, False, True,  10, "./music/training_1.ogg"),
+    'zone1_1_1':  WaltzParams.WaltzParams("../../data/music/zone1_1_1.ogg",  115, False, False, 10, "./music/zone1_1_1.ogg" ),
+    'zone1_2_1':  WaltzParams.WaltzParams("../../data/music/zone1_2_1.ogg",  130, True,  False, 10, "./music/zone1_2_1.ogg" ),
+    'zone1_3_1':  WaltzParams.WaltzParams("../../data/music/zone1_3_1.ogg",  140, False, True,  10, "./music/zone1_3_1.ogg" ),
+    'zone2_1_1':  WaltzParams.WaltzParams("../../data/music/zone2_1_1.ogg",  130, True,  False, 10, "./music/zone2_1_1.ogg" ),
+    'zone2_2_1':  WaltzParams.WaltzParams("../../data/music/zone2_2_1.ogg",  140, False, False, 10, "./music/zone2_2_1.ogg" ),
+    'zone2_3_1':  WaltzParams.WaltzParams("../../data/music/zone2_3_1.ogg",  150, True,  True,  10, "./music/zone2_3_1.ogg" ),
+    'zone3_1_1c': WaltzParams.WaltzParams("../../data/music/zone3_1_1c.ogg", 135, False, False, 10, "./music/zone3_1_1c.ogg"),
+    'zone3_1_1h': WaltzParams.WaltzParams("../../data/music/zone3_1_1h.ogg", 135, False, True,  10, "./music/zone3_1_1h.ogg"),
+    'zone3_2_1c': WaltzParams.WaltzParams("../../data/music/zone3_2_1c.ogg", 145, True,  False, 10, "./music/zone3_2_1c.ogg"),
+    'zone3_2_1h': WaltzParams.WaltzParams("../../data/music/zone3_2_1h.ogg", 145, True,  True,  10, "./music/zone3_2_1h.ogg"),
+    'zone3_3_1c': WaltzParams.WaltzParams("../../data/music/zone3_3_1c.ogg", 155, False, True,  10, "./music/zone3_3_1c.ogg"),
+    'zone3_3_1h': WaltzParams.WaltzParams("../../data/music/zone3_3_1h.ogg", 155, False, True,  10, "./music/zone3_3_1h.ogg"),
+    'zone4_1_1':  WaltzParams.WaltzParams("../../data/music/zone4_1_1.ogg",  130, False, False, 10, "./music/zone4_1_1.ogg" ),
+    'zone4_2_1':  WaltzParams.WaltzParams("../../data/music/zone4_2_1.ogg",  145, False, False, 10, "./music/zone4_2_1.ogg" ),
+    'zone4_3_1':  WaltzParams.WaltzParams("../../data/music/zone4_3_1.ogg",  160, False, True,  10, "./music/zone4_3_1.ogg" ),
+    'zone5_1_1':  WaltzParams.WaltzParams("../../data/music/zone5_1_1.ogg",  130, False, False, 10, "./music/zone5_1_1.ogg" ),
+    'zone5_2_1':  WaltzParams.WaltzParams("../../data/music/zone5_2_1.ogg",  140, True,  True,  10, "./music/zone5_2_1.ogg" ),
+    'zone5_3_1':  WaltzParams.WaltzParams("../../data/music/zone5_3_1.ogg",  155, False, False, 10, "./music/zone5_3_1.ogg", [112, 152, 336])
+})
