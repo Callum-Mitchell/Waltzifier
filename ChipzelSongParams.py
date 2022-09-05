@@ -1,6 +1,6 @@
+"""! Provides a lookup dictionary for waltz parameters in the Chipzel soundtrack"""
 import WaltzParams
 
-"""! Lookup dictionary for waltz parameters in the Chipzel soundtrack"""
 CHIPZEL_SONG_PARAMS = dict({
     'boss_1':   WaltzParams.WaltzParams("../../data/music/boss_1_chp.ogg",   120, False, False, 10, "./music/boss_1_chp.ogg"  ),
     'boss_2':   WaltzParams.WaltzParams("../../data/music/boss_2_chp.ogg",   175, False, False, 10, "./music/boss_2_chp.ogg"  ),

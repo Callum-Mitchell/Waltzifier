@@ -1,6 +1,6 @@
+"""! Provides a lookup dictionary for waltz parameters in the Overclocked Remix soundtrack"""
 import WaltzParams
 
-"""! Lookup dictionary for waltz parameters in the Overclocked Remix soundtrack"""
 OCR_SONG_PARAMS = dict({
     'boss_1':   WaltzParams.WaltzParams("../../data/music/boss_1_ocr.ogg",   120, False, False, 10, "./music/boss_1_ocr.ogg"  ),
     'boss_2':   WaltzParams.WaltzParams("../../data/music/boss_2_ocr.ogg",   175, False, False, 10, "./music/boss_2_ocr.ogg"  ),

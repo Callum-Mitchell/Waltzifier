@@ -1,7 +1,10 @@
-"""! NecroDancerSoundtrackWaltzifier
-A simple convenience command interface intended to be run by users of the Waltzifier Steam Workshop mod folder.
-When run inside the mod folder, this script will automatically waltzify all official versions Crypt of the NecroDancer soundtracks in sequence so they can be played in-game.
-The interface also allows a user to specify a single version of the soundtrack, a specific song, or both, to be waltzified.
+"""!
+A simple convenience command interface for generating all waltzified soundtracks in full for the Crypt of the Necrodancer.
+The interface also allowed a user to specify a single version of the soundtrack, a specific song, or both, to be waltzified (since the full script takes ~45 minutes).
+This was made to be run from within "<Steam_install_dir>/steamapps/common/Crypt of the NecroDancer/mods/Ball of the NecroWaltzer"
+When run inside this folder, the script automatically waltzified all official versions Crypt of the NecroDancer soundtracks in sequence so they could be played in-game.
+However, due to issues with the old modding system/song replacements, I had to create a new (Synchrony) mod to tell the game to use these waltzified songs.
+See BalloftheNecroWaltzer.lua for details. I then copied the waltzified songs to the new mod folder so the lua script could access them.
 """
 
 import ARivalSongParams, ChipzelSongParams, DanganronpaSongParams, \
@@ -12,6 +15,7 @@ import numpy as np
 import sys
 import Waltzifier
 
+"""! Dictionary defining parameters for each soundtrack"""
 SOUNDTRACK_PARAMS_DICT = dict({
     'DannyB':            DannyBSongParams.DANNYB_SONG_PARAMS,
     'ARival':            ARivalSongParams.ARIVAL_SONG_PARAMS,

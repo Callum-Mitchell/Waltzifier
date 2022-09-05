@@ -1,6 +1,6 @@
+"""! Provides a lookup dictionary for waltz parameters in the Danganronpa soundtrack"""
 import WaltzParams
 
-"""! Lookup dictionary for waltz parameters in the Danganronpa soundtrack"""
 DANGANRONPA_SONG_PARAMS = dict({
     'boss_1':   WaltzParams.WaltzParams("../../data/music/boss_1_6.ogg",   120, False, False, 10, "./music/boss_1_6.ogg"  ),
     'boss_2':   WaltzParams.WaltzParams("../../data/music/boss_2_6.ogg",   175, False, False, 10, "./music/boss_2_6.ogg"  ),

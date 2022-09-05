@@ -1,8 +1,7 @@
-"""! @mainpage Waltzifier
-@section description_main Description
-A set of utilities and command interfaces for turning steady-BPM audio files into customizable, high-quality waltz rhythms with minimal sound artifacts.
-This project was designed to waltzify all official versions of the Crypt of the NecroDancer video game soundtrack to be playable in-game via a Steam Workshop mod.
-However, it can also be used to waltzify other audio tracks, provided they have an exact known, steady tempo and a straight- or swing-time 4/4 rhythm.
+"""!
+Public function and command interface for turning straight- or swing-time 4/4 rhythm audio files into customizable waltz rhythms with minimal sound artifacts.
+For best results, input songs must have either a) a known beatmap file (newline-separated beat timing in seconds -- see sample_music example),
+or b) a known, steady tempo (in exact beats per minute).
 """
 
 # Imports
@@ -193,12 +192,7 @@ def _getSwingBeatQuadTimeMapHT(inSamples, globalSampleIdx, beatSampleLength):
 
 def waltzifyFile(waltzParams: WaltzParams):
     """! Procedurally time-stretches an audio file from a straight/swing rhythm to a waltz rhythm
-    @param inFilePath: name/path to input audio file
-    @param bpm: tempo of the input audio track in beats per minute
-    @param sw: indicates the input audio track has a swing rhythm (False=straight rhythm)
-    @param ht: set true to produce a half-time (slower) waltz output track (False=full-time waltz)
-    @param beatDelayMs: specify delay in milliseconds before the first "beat" of the input track (useful for rhythm-syncing)
-    @param outFilePath: name/path to produce output audio file (default if empty: <input file directory> + "waltz" [+ "ht" if half-time] + "_" + <input file name>)
+    @param waltzParams: configuration for waltz settings
     """
     #Input samples
     inSamples, sr = sf.read(waltzParams.inFilePath)
@@ -305,10 +299,12 @@ def main():
         print("-delay: specify delay in milliseconds before the first beat; use if the timing/rhythm sounds off\n")
         print("-out: specify a custom output file path (.ogg recommended). Default is \"waltz\" [+ \"ht\"] + \"_\" + <input file name> in the current directory")
         print("-timeswitch: specify a beat on which to switch between half- and full-time waltz (can specify multiple)")
-        print("Example: waltzifier.py zone_1_3.ogg -bpm 140")
-        print("Example: waltzifier.py ./sample_music/zone_2_3.ogg -bpm 150 ht sw -delay 10 -out ./zone_2_3_halftimeswing.ogg\n")
-        print("Example: waltzifier.py ./sample_music/boss_7.ogg -delay -30 -beatmap ./sample_music/boss_7.txt\n")
-        print("Example: waltzifier.py ./sample_music/boss_8.ogg -bpm 120 ht -timeswitch 48\n")
+        print("\nExamples:")
+        print("python waltzifier.py ./sample_music/zone1_1.ogg -bpm 115")
+        print("python waltzifier.py ./sample_music/zone2_3.ogg -bpm 150 ht sw -delay 10 -out ./sample_music/waltz_zone2_3_halftime.ogg")
+        print("python waltzifier.py ./sample_music/boss_7.ogg -delay -30 -beatmap ./sample_music/boss_7.txt")
+        print("python waltzifier.py ./sample_music/boss_8.ogg -bpm 120 ht -timeswitch 48")
+        print("python waltzifier.py ./sample_music/zone5_3.ogg -bpm 155 -timeswitch 112 -timeswitch 152 -timeswitch 336")
         exit()
 
     inFilePath = args[0]
@@ -378,6 +374,7 @@ def main():
         print("Error: either BPM or beatmap file is required")
         exit()
     waltzParams = WaltzParams.WaltzParams(inFilePath, bpm, sw, ht, beatDelayMs, outFilePath, timeSwitchBeats, customBeatmapFile)
+    print("Performing walzification")
     waltzifyFile(waltzParams)
     exit()
 

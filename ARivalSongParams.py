@@ -1,6 +1,6 @@
+"""! Provides a lookup dictionary for waltz parameters in the A-Rival soundtrack """
 import WaltzParams
 
-"""! Lookup dictionary for waltz parameters in the A-Rival soundtrack"""
 ARIVAL_SONG_PARAMS = dict({
     'boss_1':   WaltzParams.WaltzParams("../../data/music/boss_1_1.ogg",   120, False, False, 10, "./music/boss_1_1.ogg"  ),
     'boss_2':   WaltzParams.WaltzParams("../../data/music/boss_2_1.ogg",   175, False, False, 10, "./music/boss_2_1.ogg"  ),
