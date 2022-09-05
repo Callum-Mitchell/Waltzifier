@@ -56,7 +56,8 @@ def main():
         soundtrackNames = SOUNDTRACK_PARAMS_DICT.keys()
         print("Waltzifying all available soundtracks")
     else:
-        print("Waltzifying the following soundtracks: " + soundtrackNames)
+        print("Waltzifying the following soundtracks:")
+        print(soundtrackNames)
 
     if len(songNames) == 0:
         for soundtrack in SOUNDTRACK_PARAMS_DICT.values():
@@ -64,7 +65,8 @@ def main():
                 songNames.add(key)
         print("Waltzifying all songs in each soundtrack")
     else:
-        print("Songs to waltzify:" + songNames)
+        print("Songs to waltzify:")
+        print(songNames)
 
     print("Performing waltzification...")
     for soundtrackName in soundtrackNames:
