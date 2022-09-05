@@ -1,8 +1,9 @@
-import WaltzParams
-
-"""! Lookup dictionary for all songs within the data/sounds_streaming directory.
+"""!
+Provides a lookup dictionary for all songs within the game's data/sounds_streaming directory.
 These include Coral Riff instrument layers, Fortissimole's vocals, and all shopkeeper songs
 """
+import WaltzParams
+
 SOUNDS_STREAMING_PARAMS = dict({
     'boss_4_inst0':           WaltzParams.WaltzParams("../../data/sounds_streaming/boss_4_inst0.ogg",           126, False, True,  35, "./sounds_streaming/boss_4_inst0.ogg"          ),
     'boss_4_inst1':           WaltzParams.WaltzParams("../../data/sounds_streaming/boss_4_inst1.ogg",           126, False, True,  35, "./sounds_streaming/boss_4_inst1.ogg"          ),

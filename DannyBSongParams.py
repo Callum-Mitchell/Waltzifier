@@ -1,6 +1,7 @@
+"""! Provides a lookup dictionary for waltz parameters in the DannyB soundtrack"""
+
 import WaltzParams
 
-"""! Lookup dictionary for waltz parameters in the DannyB soundtrack"""
 DANNYB_SONG_PARAMS = dict({
     'boss_1':    WaltzParams.WaltzParams("../../data/music/boss_1.ogg",    120, False, False, 10,    "./music/boss_1.ogg"   ),
     'boss_2':    WaltzParams.WaltzParams("../../data/music/boss_2.ogg",    175, False, False, 10,    "./music/boss_2.ogg"   ),

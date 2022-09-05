@@ -1,6 +1,7 @@
+"""! Provides a lookup dictionary for waltz parameters in the Virt soundtrack"""
+
 import WaltzParams
 
-"""! Lookup dictionary for waltz parameters in the Virt soundtrack"""
 GIRLFRIEND_RECORDS_SONG_PARAMS = dict({
     'boss_1':   WaltzParams.WaltzParams("../../data/music/boss_1_4.ogg",   120, False, False, 10, "./music/boss_1_4.ogg"  ),
     'boss_2':   WaltzParams.WaltzParams("../../data/music/boss_2_4.ogg",   175, False, True,  10, "./music/boss_2_4.ogg"  ),
