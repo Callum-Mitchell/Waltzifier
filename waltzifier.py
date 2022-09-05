@@ -221,7 +221,7 @@ def waltzifyFile(waltzParams: WaltzParams):
         waltzParams.outFilePath += '_' + inFileName
     
     #Sorted ordering needed for waltz timeswitching to work
-        waltzParams.timeSwitchBeats.sort(reverse=True)
+    waltzParams.timeSwitchBeats.sort(reverse=True)
 
     #Parse custom beat samples if available
     customBeatSamples = []
