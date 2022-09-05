@@ -4,12 +4,12 @@ import WaltzParams
 These include Coral Riff instrument layers, Fortissimole's vocals, and all shopkeeper songs
 """
 SOUNDS_STREAMING_PARAMS = dict({
-    'boss_4_inst0':           WaltzParams.WaltzParams("../../data/sounds_streaming/boss_4_inst0.ogg",           126, False, True,  10, "./sounds_streaming/boss_4_inst0.ogg"          ),
-    'boss_4_inst1':           WaltzParams.WaltzParams("../../data/sounds_streaming/boss_4_inst1.ogg",           126, False, True,  10, "./sounds_streaming/boss_4_inst1.ogg"          ),
-    'boss_4_inst2':           WaltzParams.WaltzParams("../../data/sounds_streaming/boss_4_inst2.ogg",           126, False, True,  10, "./sounds_streaming/boss_4_inst2.ogg"          ),
-    'boss_4_inst3':           WaltzParams.WaltzParams("../../data/sounds_streaming/boss_4_inst3.ogg",           126, False, True,  10, "./sounds_streaming/boss_4_inst3.ogg"          ),
-    'boss_4_inst4':           WaltzParams.WaltzParams("../../data/sounds_streaming/boss_4_inst4.ogg",           126, False, True,  10, "./sounds_streaming/boss_4_inst4.ogg"          ),
-    'boss_9_vocal':           WaltzParams.WaltzParams("../../data/sounds_streaming/boss_9_vocal.ogg",           150, False, False, 10, "./sounds_streaming/boss_9_vocal.ogg"          ),
+    'boss_4_inst0':           WaltzParams.WaltzParams("../../data/sounds_streaming/boss_4_inst0.ogg",           126, False, True,  35, "./sounds_streaming/boss_4_inst0.ogg"          ),
+    'boss_4_inst1':           WaltzParams.WaltzParams("../../data/sounds_streaming/boss_4_inst1.ogg",           126, False, True,  35, "./sounds_streaming/boss_4_inst1.ogg"          ),
+    'boss_4_inst2':           WaltzParams.WaltzParams("../../data/sounds_streaming/boss_4_inst2.ogg",           126, False, True,  35, "./sounds_streaming/boss_4_inst2.ogg"          ),
+    'boss_4_inst3':           WaltzParams.WaltzParams("../../data/sounds_streaming/boss_4_inst3.ogg",           126, False, True,  35, "./sounds_streaming/boss_4_inst3.ogg"          ),
+    'boss_4_inst4':           WaltzParams.WaltzParams("../../data/sounds_streaming/boss_4_inst4.ogg",           126, False, True,  35, "./sounds_streaming/boss_4_inst4.ogg"          ),
+    'boss_9_vocal':           WaltzParams.WaltzParams("../../data/sounds_streaming/boss_9_vocal.ogg",           150, False, False, 0,  "./sounds_streaming/boss_9_vocal.ogg"          ),
     'zone1_1_shopkeeper':     WaltzParams.WaltzParams("../../data/sounds_streaming/zone1_1_shopkeeper.ogg",     115, False, False, 10, "./sounds_streaming/zone1_1_shopkeeper.ogg"    ),
     'zone1_1_shopkeeper_m':   WaltzParams.WaltzParams("../../data/sounds_streaming/zone1_1_shopkeeper_m.ogg",   115, False, False, 10, "./sounds_streaming/zone1_1_shopkeeper_m.ogg"  ),
     'zone1_1_shopkeeper_nd':  WaltzParams.WaltzParams("../../data/sounds_streaming/zone1_1_shopkeeper_nd.ogg",  115, False, False, 10, "./sounds_streaming/zone1_1_shopkeeper_nd.ogg" ),
