@@ -14,7 +14,7 @@ OCR_SONG_PARAMS = dict({
     'zone1_3':  WaltzParams.WaltzParams("../../data/music/zone1_3_ocr.ogg",  140, False, True,  10, "./music/zone1_3_ocr.ogg" ),
     'zone2_1':  WaltzParams.WaltzParams("../../data/music/zone2_1_ocr.ogg",  130, True,  True,  10, "./music/zone2_1_ocr.ogg" ),
     'zone2_2':  WaltzParams.WaltzParams("../../data/music/zone2_2_ocr.ogg",  140, False, False, 10, "./music/zone2_2_ocr.ogg" ),
-    'zone2_3':  WaltzParams.WaltzParams("../../data/music/zone2_3_ocr.ogg",  150, True,  True,  10, "./music/zone2_3_ocr.ogg" ),
+    'zone2_3':  WaltzParams.WaltzParams("../../data/music/zone2_3_ocr.ogg",  150, False, True,  10, "./music/zone2_3_ocr.ogg" ),
     'zone3_1c': WaltzParams.WaltzParams("../../data/music/zone3_1_ocrc.ogg", 135, False, False, 10, "./music/zone3_1_ocrc.ogg"),
     'zone3_1h': WaltzParams.WaltzParams("../../data/music/zone3_1_ocrh.ogg", 135, False, True,  10, "./music/zone3_1_ocrh.ogg"),
     'zone3_2c': WaltzParams.WaltzParams("../../data/music/zone3_2_ocrc.ogg", 145, True,  False, 10, "./music/zone3_2_ocrc.ogg"),
