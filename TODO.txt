@@ -1,2 +1,0 @@
-TODOS (all):
-- Update documentation to final version of the program
