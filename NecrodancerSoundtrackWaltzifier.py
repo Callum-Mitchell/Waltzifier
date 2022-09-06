@@ -5,13 +5,16 @@ This was made to be run from within "<Steam_install_dir>/steamapps/common/Crypt 
 When run inside this folder, the script automatically waltzified all official versions Crypt of the NecroDancer soundtracks in sequence so they could be played in-game.
 However, due to issues with the old modding system/song replacements, I had to create a new (Synchrony) mod to tell the game to use these waltzified songs.
 See BalloftheNecroWaltzer.lua for details. I then copied the waltzified songs to the new mod folder so the lua script could access them.
+Note that this script (and its imported waltz parameters) produces WAV-encoded audio files with .ogg extension.
+This is because a dependency of soundfile (libsndfile) causes issues with producing ogg/vorbis files. See https://github.com/bastibe/python-soundfile/issues/130
+There is no easy, reliable fix for this, but the .ogg extension is required for old-style NecroDancer mods to recognize the new music names.
+Thus the workaround was to use .ogg extensions for WAV-encoded output, which the game will both recognize and successfully play in-game.
 """
 
 import ARivalSongParams, ChipzelSongParams, DanganronpaSongParams, \
     DannyBSongParams, GirlfriendRecordsSongParams, JulesSongParams, \
     OCRSongParams, SoundsStreamingParams, VirtSongParams
 
-import numpy as np
 import sys
 import Waltzifier
 
