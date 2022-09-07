@@ -216,8 +216,9 @@ def waltzifyFile(waltzParams: WaltzParams):
         pathNoExt, period, _ = waltzParams.outFilePath.rpartition(".")
         waltzParams.outFilePath = pathNoExt + period + 'wav'
     
-    #Sorted ordering needed for waltz timeswitching to work
+    #Sorted ordering needed for waltz timeswitching/rhythmswitching to work
     waltzParams.timeSwitchBeats.sort(reverse=True)
+    waltzParams.rhythmSwitchBeats.sort(reverse=True)
 
     #Parse custom beat samples if available
     customBeatSamples = []
@@ -281,7 +282,12 @@ def waltzifyFile(waltzParams: WaltzParams):
         if len(waltzParams.timeSwitchBeats) != 0 and waltzParams.timeSwitchBeats[-1] <= currentBeatIdx:
             waltzParams.ht = not waltzParams.ht
             waltzParams.timeSwitchBeats.pop(-1)
-    
+
+        #Switch between straight/swing input handling if applicable
+        if len(waltzParams.rhythmSwitchBeats) != 0 and waltzParams.rhythmSwitchBeats[-1] <= currentBeatIdx:
+            waltzParams.sw = not waltzParams.sw
+            waltzParams.rhythmSwitchBeats.pop(-1)
+
     #Using the final time map, stretch the whole song at once
     outSamples = pyrb.pyrb.timemap_stretch(inSamples, sr, waltzSampleTimeMap)
     
@@ -293,7 +299,7 @@ def main():
     """! Main program entry; provides command interface for song waltzification"""
     args = sys.argv[1:]
     if len(args) < 2:
-        print("Usage: walzifier.py infile [-bpm bpm] [-beatmap filepath] [sw] [ht] [-delay beatdelayms] [-out outfile] [-timeswitch switchbeat]\n")
+        print("Usage: walzifier.py infile [-bpm bpm] [-beatmap filepath] [sw] [ht] [-delay beatdelayms] [-out outfile] [-tsb timeswitchbeat] [-rsb rhythmswitchbeat]\n")
         print("infile: input audio file path")
         print("-bpm: specify song tempo in beats per minute. Required unless using a custom beatmap")
         print("-beatmap: path to custom beatmap text file (should list newline-separated beat points in seconds). *This will override bpm*")
@@ -301,13 +307,15 @@ def main():
         print("ht: use to produce a half-time waltz rhythm (4 beats/measure instead of 2)")
         print("-delay: specify delay in milliseconds before the first beat; use if the timing/rhythm sounds off\n")
         print("-out: specify a custom output file path (.wav recommended). Default is \"waltz\" [+ \"ht\"] + \"_\" + <input file name (.wav converted)> in the current directory")
-        print("-timeswitch: specify a beat on which to switch between half- and full-time waltz (can specify multiple)")
+        print("-tsb: specify a beat on which to switch between half- and full-time waltz (can specify multiple)")
+        print("-rsb: specify a beat on which to switch between straight- and swing-rhythm input handling (can specify multiple)")
         print("\nExamples:")
         print("python waltzifier.py ./sample_music/zone1_1.ogg -bpm 115")
         print("python waltzifier.py ./sample_music/zone2_3.ogg -bpm 150 ht sw -delay 10 -out ./sample_music/waltz_zone2_3_halftime.wav")
-        print("python waltzifier.py ./sample_music/boss_7.ogg -delay -30 -beatmap ./sample_music/boss_7.txt")
-        print("python waltzifier.py ./sample_music/boss_8.ogg -bpm 120 ht -timeswitch 48")
-        print("python waltzifier.py ./sample_music/zone5_3.ogg -bpm 155 -timeswitch 112 -timeswitch 152 -timeswitch 336")
+        print("python waltzifier.py ./sample_music/boss_7.ogg -delay -45 -beatmap ./sample_music/boss_7.txt")
+        print("python waltzifier.py ./sample_music/boss_8.ogg -bpm 120 ht -tsb 48")
+        print("python waltzifier.py ./sample_music/zone5_3.ogg -bpm 155 -tsb 112 -tsb 152 -tsb 336")
+        print("python waltzifier.py ./sample_music/zone1_2_ocr.ogg -bpm 130 -delay 20 -rsb 184 -rsb 224")
         exit()
 
     inFilePath = args[0]
@@ -318,7 +326,9 @@ def main():
     beatDelayMs = 0
     i = 1
     timeSwitchBeats = []
+    rhythmSwitchBeats = []
     customBeatmapFile = ""
+
     while i < len(args):
         arg = args[i]
         if arg == "sw":
@@ -340,7 +350,7 @@ def main():
 
         elif arg == "-bpm":
             if i == len(args) - 1 or not float(args[i+1]):
-                print("Error: -bpm flag must be followed by a number (tempo in beats per minute)")
+                print("Error: -bpm option must be followed by a number (tempo in beats per minute)")
                 exit()
             bpm = float(args[i+1])
             if(bpm <= float(0.0)):
@@ -355,16 +365,23 @@ def main():
             print("Beat delay of " + str(beatDelayMs) + "ms applied")
             i += 2
 
-        elif arg == "-timeswitch":
+        elif arg == "-tsb":
             if i == len(args) - 1 or not int(args[i+1]):
-                print("Error: -timeswitch option must be followed by a number (beat on which to timeswitch)")
+                print("Error: -tsb option must be followed by a number (beat on which to switch half/full time)")
                 exit()
             timeSwitchBeats.append(int(args[i+1]))
             i += 2
 
+        elif arg == "-rsb":
+            if i == len(args) - 1 or not int(args[i+1]):
+                print("Error: -rsb option must be followed by a number (beat on which input rhythm changes)")
+                exit()
+            rhythmSwitchBeats.append(int(args[i+1]))
+            i += 2
+
         elif arg == "-beatmap":
             if i == len(args) - 1:
-                print("Error: -timeswitch option must be followed by a decimal number (change in bpm per beat)")
+                print("Error: -beatmap option must be followed by a beatmap file path")
                 exit()
             customBeatmapFile = args[i+1]
             i += 2
@@ -376,7 +393,7 @@ def main():
     if not bpm and not customBeatmapFile:
         print("Error: either BPM or beatmap file is required")
         exit()
-    waltzParams = WaltzParams.WaltzParams(inFilePath, bpm, sw, ht, beatDelayMs, outFilePath, timeSwitchBeats, customBeatmapFile)
+    waltzParams = WaltzParams.WaltzParams(inFilePath, bpm, sw, ht, beatDelayMs, outFilePath, timeSwitchBeats, rhythmSwitchBeats, customBeatmapFile)
     print("Performing walzification")
     waltzifyFile(waltzParams)
     exit()
