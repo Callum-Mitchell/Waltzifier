@@ -310,12 +310,9 @@ def main():
         print("-tsb: specify a beat on which to switch between half- and full-time waltz (can specify multiple)")
         print("-rsb: specify a beat on which to switch between straight- and swing-rhythm input handling (can specify multiple)")
         print("\nExamples:")
-        print("python waltzifier.py ./sample_music/zone1_1.ogg -bpm 115")
-        print("python waltzifier.py ./sample_music/zone2_3.ogg -bpm 150 ht sw -delay 10 -out ./sample_music/waltz_zone2_3_halftime.wav")
-        print("python waltzifier.py ./sample_music/boss_7.ogg -delay -45 -beatmap ./sample_music/boss_7.txt")
-        print("python waltzifier.py ./sample_music/boss_8.ogg -bpm 120 ht -tsb 48")
-        print("python waltzifier.py ./sample_music/zone5_3.ogg -bpm 155 -tsb 112 -tsb 152 -tsb 336")
-        print("python waltzifier.py ./sample_music/zone1_2_ocr.ogg -bpm 130 -delay 20 -rsb 184 -rsb 224")
+        print("python Waltzifier.py \"./sample_music/HoliznaCC0 - Rising Hero.ogg\" -bpm 120 -delay 10 -out \"./sample_music/HoliznaCC0 - Rising Hero - Waltzified.wav\"")
+        print("python Waltzifier.py \"./sample_music/HoliznaCC0 - Coins.ogg\" -bpm 80 -delay 10")
+        print("python Waltzifier.py \"./sample_music/HoliznaCC0 - Night Driving.ogg\" -bpm 95 -delay 20 ht")
         exit()
 
     inFilePath = args[0]
@@ -349,7 +346,7 @@ def main():
             i += 2
 
         elif arg == "-bpm":
-            if i == len(args) - 1 or not float(args[i+1]):
+            if i == len(args) - 1:
                 print("Error: -bpm option must be followed by a number (tempo in beats per minute)")
                 exit()
             bpm = float(args[i+1])
@@ -359,7 +356,7 @@ def main():
             i += 2
 
         elif arg == "-delay":
-            if i == len(args) - 1 or not int(args[i+1]):
+            if i == len(args) - 1:
                 print("Error: -delay option must be followed by a number (beat delay in milliseconds)")    
             beatDelayMs = int(args[i+1])
             print("Beat delay of " + str(beatDelayMs) + "ms applied")
@@ -373,7 +370,7 @@ def main():
             i += 2
 
         elif arg == "-rsb":
-            if i == len(args) - 1 or not int(args[i+1]):
+            if i == len(args) - 1:
                 print("Error: -rsb option must be followed by a number (beat on which input rhythm changes)")
                 exit()
             rhythmSwitchBeats.append(int(args[i+1]))
