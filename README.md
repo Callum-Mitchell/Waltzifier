@@ -1,5 +1,5 @@
 # Waltzifier
-A set of utilities and command interfaces used for creating a Crypt of the NecroDancer Steam mod.
+A set of utilities and command interfaces used for creating a Crypt of the NecroDancer music mod.
 
 The mod turns all in-game songs into waltz rhythms (effectively 1.5x speed rhythms where 2 beats become 3). The aim was to accomplish this for all in-game songs and soundtracks, while preserving decent sound quality with minimal sound artifacts. To accomplish this, Python script utilities were used which leverage PyRubberBand for high-quality audio timestretching:
 https://pyrubberband.readthedocs.io/en/stable/index.html
